@@ -1,0 +1,35 @@
+public class node {
+	private int Row;
+	private int Col;
+	private int Data;	
+
+	public node(int row, int col, int data){
+		this.Row = row;
+		this.Col = col;
+		this.Data = data;
+	}
+	
+	public int getRow(){
+		 return this.Row;
+	}
+	
+	public int getCol(){
+		return this.Col;
+	}
+	
+	public int getData(){
+		return this.Data;
+	}
+	
+	public void setRow(int R){
+		this.Row = R;
+	}
+	
+	public void setCol(int C){
+		this.Col = C;	
+	}
+	
+	public void setData(int D){
+		this.Data = D;
+	}
+}
