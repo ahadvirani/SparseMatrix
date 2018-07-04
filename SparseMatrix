@@ -1,0 +1,160 @@
+//Ahad Virani
+import java.util.*;
+import java.lang.*;
+
+public class SparseMatrix implements SparseInterface {
+	
+	LinkedList<node> SparMat = new LinkedList<node>();							//LinkedList called SparMat
+	private int s;																//global variable for row
+	private int ss;																//global variable for column
+
+	public void clear(){
+		this.SparMat.clear();		//Clear Sparse Matrix
+	}
+	
+	public void setSize(int numRows, int numCols){
+		this.s = numRows;		//Sets max size of row 
+		this.ss = numCols;		//Sets max size of col
+		clear();
+	}
+	
+	public int getNumRows(){
+		return this.s;	//return size of row
+	}
+	
+	public int getNumCols(){
+		return this.ss;		//return size of col
+	}
+	
+	public void addElement(int row, int col, int data){							//Adds an element to the row and column
+		if (row > this.s - 1 || col > this.ss - 1 || col < 0 || row < 0){
+			//Error Message
+			throw new RuntimeException("Row/column combination is out of bounds.");
+		} 
+		if (SparMat.size() == 0){			//check if size for sparse matrix is 0 
+			if (data == 0){					
+				return;
+			}
+			else{
+				SparMat.add(new node(row, col, data));
+				return;
+			}
+		}
+		for (int i = 0; i < SparMat.size(); i++){
+			if(SparMat.get(i).getCol() == col && SparMat.get(i).getRow() == row){
+				if (data == 0){
+					SparMat.remove(i);
+					return;
+				}
+				else{
+					node y = new node(row, col, data);
+					SparMat.set(i, y);
+					return;
+				}							
+			}
+		}
+		if(data != 0){
+			SparMat.add(new node(row, col, data));
+		}
+		else {
+			return;
+		}
+		
+	}
+	
+	public void removeElement(int row, int col){								//Elements at specific row/col are made 0
+		if (row > this.s - 1 || col > this.ss - 1  || col < 0 || row < 0){
+			 //Error Message
+			throw new RuntimeException("Row/column combination is out of bounds.");
+		}
+		for(int w = 0; w < SparMat.size(); w++){
+			if(SparMat.get(w).getCol() == col && SparMat.get(w).getRow() == row){
+				node y = new node(row, col, 0);
+				SparMat.set(w, y);
+				SparMat.remove(w);
+				return;
+			}
+		}
+	}
+	
+	public int getElement(int row, int col){									//Return the element at the specified row and column
+		int data = 0;
+		if(row > this.s - 1 || col > this.ss - 1 || s < 0 || ss < 0){
+			 //Error Message
+			 throw new RuntimeException("Row/column combination is out of bounds.");
+		 }
+		 for(int c = 0; c < SparMat.size(); c++){
+			if(SparMat.get(c).getRow() == row && SparMat.get(c).getCol() == col ){
+				data = SparMat.get(c).getData();
+			}
+		}
+		return data;
+	}
+	
+	public String toString(){													//Returns nonzero elements of the sparse matrix as a string
+		String mat = "";				//Empty string called mat
+		if (SparMat.size() == 0){		//returns an empty string if size is 0
+			return mat;
+		}
+		else{
+			//loops through row, column and data
+			for(int a = 0; a < this.s; a++){
+				for(int b = 0; b < this.s; b++){
+					for (int c = 0; c < SparMat.size(); c++){
+						if(SparMat.get(c).getRow() == a && SparMat.get(c).getCol() == b){
+							
+						int row = SparMat.get(c).getRow();
+						int col = SparMat.get(c).getCol();
+						int data = SparMat.get(c).getData();
+						mat = mat + Integer.toString(row) + " " + Integer.toString(col) + " " + Integer.toString(data) + "\n";		//saves to mat in "row column data" format
+						
+						}
+					}
+				}
+			}
+		}
+		
+		return mat;					//returns mat in "row column data" format
+	}
+	
+	public SparseInterface addMatrices(SparseInterface matrixToAdd){			//takes another matrix as input and returns the sum of the two matrices
+		SparseMatrix matrix = new SparseMatrix();
+		//goes through matrix and add elements
+		if((this.getNumRows() == matrixToAdd.getNumRows()) && (this.getNumCols() == matrixToAdd.getNumCols())){
+			matrix.setSize(matrixToAdd.getNumRows(), matrixToAdd.getNumCols());
+			for(int a = 0; a < matrixToAdd.getNumRows(); a++){
+				for(int b = 0; b < matrixToAdd.getNumCols(); b++){
+					int val = this.getElement(a,b) + matrixToAdd.getElement(a,b);
+					matrix.addElement(a,b,val);
+				}
+			}
+			return matrix;			//return added matrix
+		}
+		//returns null if sizes incompatible
+		else{
+			return null;
+		}
+	}
+	
+	public SparseInterface multiplyMatrices(SparseInterface matrixToMultiply){	//takes another matrix as input and returns the product of the two matrices
+		SparseMatrix matrix = new SparseMatrix();
+		//goes though matrix and multiples elements
+		if(this.getNumCols() == matrixToMultiply.getNumRows()){
+			matrix.setSize(this.getNumRows(), matrixToMultiply.getNumCols());
+			for(int a = 0; a < this.getNumRows(); a++){
+				for(int b = 0; b < matrixToMultiply.getNumCols(); b++){
+					for(int c = 0; c < this.getNumCols(); c++){
+						int val = (this.getElement(a,c) * matrixToMultiply.getElement(c,b));
+						matrix.addElement(a, b, matrix.getElement(a, b) + val);	
+					}
+				}
+			}
+			return matrix;		//return multiplied matrix
+		}
+		//returns null if sizes incompatible
+		else{
+			return null;
+		}
+	}
+
+}
